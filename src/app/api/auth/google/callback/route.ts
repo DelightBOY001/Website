@@ -3,7 +3,7 @@ import { handler, jsonError } from '@/lib/api';
 import { limitFor } from '@/lib/rate-limit';
 import { exchangeGoogleCode, upsertGoogleUser } from '@/services/auth.service';
 import { ValidationError } from '@/lib/errors';
-import { env } from '@/lib/env';
+import { effectiveAppUrl } from '@/lib/auth';
 
 /**
  * GET /api/auth/google/callback — completes the Google OAuth flow,
@@ -15,7 +15,7 @@ export const GET = handler(async (req: NextRequest) => {
   const code = url.searchParams.get('code');
   const state = url.searchParams.get('state');
   const error = url.searchParams.get('error');
-  const appUrl = env.APP_URL.replace(/\/$/, '');
+  const appUrl = effectiveAppUrl(req);
 
   if (error) {
     return NextResponse.redirect(`${appUrl}/login?error=${encodeURIComponent(error)}`);
@@ -27,7 +27,7 @@ export const GET = handler(async (req: NextRequest) => {
   }
 
   try {
-    const profile = await exchangeGoogleCode(code);
+    const profile = await exchangeGoogleCode(code, appUrl);
     if (!profile.email) throw new ValidationError('Google account has no email.');
     await upsertGoogleUser(profile);
     const res = NextResponse.redirect(`${appUrl}/dashboard`);

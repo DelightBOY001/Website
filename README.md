@@ -204,9 +204,11 @@ Atlas M0 is free forever (512 MB — plenty for thousands of players).
    your email → Save (Scopes/optional: skip) → add yourself as **Test user**.
 4. **APIs & Services → Credentials → Create Credentials → OAuth client ID**
    - Application type: **Web application**
-   - **Authorised redirect URIs** → Add exactly:
-     - Local: `http://localhost:3000/api/auth/google`
-     - Production: `https://YOUR-PROJECT.vercel.app/api/auth/google`
+   - **Authorised redirect URIs** → add the exact callback URL(s):
+     - Local: `http://localhost:3000/api/auth/google/callback`
+     - Production: `https://YOUR-PROJECT.vercel.app/api/auth/google/callback`
+   - Replace the hostname/port with the exact site you sign in on. Google checks the scheme, host, port, and full path; `/api/auth/google` is **not** the callback.
+   - If you still see `redirect_uri_mismatch`, copy the exact URI printed in the server terminal as `[auth] Google OAuth redirect URI:` and add it here. Save, then retry.
 5. Copy the **Client ID** and **Client Secret**:
 
    ```env
@@ -357,7 +359,7 @@ $env:MONGODB_URI="mongodb+srv://user:pass@cluster0.xxxxx.mongodb.net/nexus-arena
 
 | Service | Where | URL to set |
 | --- | --- | --- |
-| Google OAuth | Credentials → your OAuth client → redirect URI | `https://YOUR-PROJECT.vercel.app/api/auth/google` |
+| Google OAuth | Credentials → your OAuth client → redirect URI | `https://YOUR-PROJECT.vercel.app/api/auth/google/callback` |
 | Razorpay webhook | Settings → Webhooks | `https://YOUR-PROJECT.vercel.app/api/payments/webhook` |
 | Razorpay keys | use **live** keys when going live | `RAZORPAY_KEY_ID` / `RAZORPAY_KEY_SECRET` |
 

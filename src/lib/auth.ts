@@ -173,3 +173,27 @@ export function publicAppUrl(path = ''): string {
   const base = env.APP_URL.replace(/\/$/, '');
   return `${base}${path.startsWith('/') ? path : path ? `/${path}` : ''}`;
 }
+
+/**
+ * Use the configured canonical URL when present; otherwise derive the incoming
+ * origin so local non-default ports and deployment preview hosts work. The exact
+ * resulting callback URL still needs to be registered in Google Cloud Console.
+ */
+export function effectiveAppUrl(
+  req: { nextUrl: { origin: string }; headers: { get(name: string): string | null } },
+  path = '',
+): string {
+  let base: string;
+  if (process.env.NEXT_PUBLIC_APP_URL) {
+    base = process.env.NEXT_PUBLIC_APP_URL.replace(/\/$/, '');
+  } else {
+    const fwdHost = req.headers.get('x-forwarded-host')?.split(',')[0].trim();
+    const forwardedProto = req.headers.get('x-forwarded-proto')?.split(',')[0].trim().toLowerCase();
+    const requestProto = new URL(req.nextUrl.origin).protocol.slice(0, -1);
+    const proto = forwardedProto === 'http' || forwardedProto === 'https'
+      ? forwardedProto
+      : requestProto;
+    base = fwdHost ? `${proto}://${fwdHost}` : req.nextUrl.origin;
+  }
+  return `${base}${path.startsWith('/') ? path : path ? `/${path}` : ''}`;
+}

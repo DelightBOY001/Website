@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { handler } from '@/lib/api';
 import { limitFor } from '@/lib/rate-limit';
 import { createOAuthState, googleOAuthUrl } from '@/services/auth.service';
+import { effectiveAppUrl } from '@/lib/auth';
 import { jsonError } from '@/lib/api';
 
 /**
@@ -12,7 +13,10 @@ export const GET = handler(async (req: NextRequest) => {
   limitFor(req, 'authWide', 'google');
   try {
     const state = createOAuthState();
-    const url = googleOAuthUrl(state);
+    const appBase = effectiveAppUrl(req);
+    const redirectUri = `${appBase}/api/auth/google/callback`;
+    console.info('[auth] Google OAuth redirect URI:', redirectUri);
+    const url = googleOAuthUrl(state, appBase);
     const res = NextResponse.redirect(url);
     res.cookies.set('nexus_oauth_state', state, {
       httpOnly: true,

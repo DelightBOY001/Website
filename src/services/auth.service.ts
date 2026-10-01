@@ -159,14 +159,15 @@ export async function resetPassword(token: string, newPassword: string) {
 
 /* ──────────────────────────── GOOGLE OAUTH ──────────────────────────── */
 
-export function googleOAuthUrl(state: string): string {
+export function googleOAuthUrl(state: string, appBase?: string): string {
   const clientId = process.env.GOOGLE_CLIENT_ID;
   if (!clientId) {
     throw new ValidationError(
-      'Google login is not configured. Set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET.',
+      'Google sign-in is not configured. Set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET in your environment.',
     );
   }
-  const redirectUri = publicAppUrl('/api/auth/google/callback');
+  const base = (appBase ?? publicAppUrl()).replace(/\/$/, '');
+  const redirectUri = `${base}/api/auth/google/callback`;
   const params = new URLSearchParams({
     client_id: clientId,
     redirect_uri: redirectUri,
@@ -186,14 +187,15 @@ export interface GoogleProfile {
   email_verified: boolean;
 }
 
-export async function exchangeGoogleCode(code: string): Promise<GoogleProfile> {
+export async function exchangeGoogleCode(code: string, appBase?: string): Promise<GoogleProfile> {
   const clientId = process.env.GOOGLE_CLIENT_ID;
   const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
   if (!clientId || !clientSecret) {
     throw new ValidationError(
-      'Google login is not configured. Set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET.',
+      'Google sign-in is not configured. Set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET in your environment.',
     );
   }
+  const base = (appBase ?? publicAppUrl()).replace(/\/$/, '');
   const tokenRes = await fetch('https://oauth2.googleapis.com/token', {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -201,7 +203,7 @@ export async function exchangeGoogleCode(code: string): Promise<GoogleProfile> {
       code,
       client_id: clientId,
       client_secret: clientSecret,
-      redirect_uri: publicAppUrl('/api/auth/google/callback'),
+      redirect_uri: `${base}/api/auth/google/callback`,
       grant_type: 'authorization_code',
     }),
   });
