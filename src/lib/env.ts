@@ -40,7 +40,7 @@ export const env = {
     return process.env.EMAIL_API_KEY || '';
   },
   get EMAIL_FROM() {
-    return process.env.EMAIL_FROM || 'NEXUS ARENA <no-reply@nexusarena.gg>';
+    return process.env.EMAIL_FROM || 'NEXUS ARENA <onboarding@resend.dev>';
   },
   get PAYMENTS_DISABLED() {
     return process.env.PAYMENTS_DISABLED === 'true';

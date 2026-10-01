@@ -40,7 +40,7 @@ export default function ForgotPasswordPage() {
             <CheckCircle2 className="mx-auto h-8 w-8 text-emerald-400" />
             <p className="mt-3 text-sm text-emerald-200">
               If an account exists for <strong>{email}</strong>, a reset link is on its way.
-              The link expires in 60 minutes.
+              The link expires in 60 minutes. Check spam/promotions too. If you are running locally without an email API key, look for the reset link in the dev server terminal.
             </p>
             <Link href="/login" className="btn-secondary mt-5 inline-flex">
               Back to sign in

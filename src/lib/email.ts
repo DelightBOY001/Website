@@ -18,12 +18,18 @@ export async function sendEmail(payload: EmailPayload): Promise<boolean> {
   const apiKey = env.EMAIL_API_KEY;
 
   if (!apiKey) {
-    console.log(
-      `[email:dev] To: ${payload.to} | Subject: ${payload.subject}\n${
-        payload.text ?? payload.html.replace(/<[^>]+>/g, ' ').slice(0, 400)
-      }`,
-    );
-    return true;
+    if (process.env.NODE_ENV === 'production') {
+      // Never write password-reset/verification URLs to production logs.
+      console.error('[email] EMAIL_API_KEY is missing; message was not sent.');
+    } else {
+      console.info('[email:dev] EMAIL_API_KEY is not set; no email was delivered.');
+      console.log(
+        `[email:dev] To: ${payload.to} | Subject: ${payload.subject}\n${
+          payload.text ?? payload.html.replace(/<[^>]+>/g, ' ').slice(0, 400)
+        }`,
+      );
+    }
+    return false;
   }
 
   try {

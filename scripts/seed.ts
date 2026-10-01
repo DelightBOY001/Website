@@ -9,6 +9,7 @@
  * 6 tournaments (various formats/statuses), registrations, payments,
  * notifications and audit entries. Idempotent-ish (checks for existing users).
  */
+import { loadEnvConfig } from '@next/env';
 import { connectDB, disconnectDB } from '../src/lib/db';
 import { hashPassword } from '../src/lib/auth';
 import {
@@ -24,6 +25,9 @@ import {
   BracketModel,
 } from '../src/models';
 import { generateBracket } from '../src/lib/bracket-engine';
+
+// Load .env.local the same way Next.js does so seeding targets the app's DB.
+loadEnvConfig(process.cwd());
 
 const INR = (n: number) => Math.round(n * 100); // paise
 

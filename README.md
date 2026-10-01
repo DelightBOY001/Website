@@ -105,13 +105,21 @@ Save the file and **restart** `npm run dev`.
 
 ## Step 5 — Load demo data (optional but fun)
 
+The seeder must use a **persistent database**. `MONGODB_URI=memory` is temporary: the seed command exits, its in-memory database closes, and the data is gone. Set a MongoDB Atlas or local MongoDB URI in `.env.local` first (the seed script reads `.env.local`), then run:
+
 ```bash
 npm run seed
 ```
 
-This creates 8 games, 6 tournaments, 8 teams, 32 players and demo payments.
+For Vercel, seed the **same Atlas database** configured in Vercel. In Windows PowerShell, you can set it just for the seed command:
 
-**Demo logins** (password for all: `Password@123`):
+```powershell
+$env:MONGODB_URI="mongodb+srv://USER:PASSWORD@CLUSTER.mongodb.net/nexus-arena"; npm run seed
+```
+
+This creates 8 games, 6 tournaments, 8 teams, 32 players and demo payments. If the output warns that it used an in-memory database, the demo accounts will not persist; configure a persistent URI and seed again.
+
+**Demo logins** (password for all: `Password@123`; use for local testing only):
 
 | Role | Email |
 | --- | --- |
@@ -120,6 +128,16 @@ This creates 8 games, 6 tournaments, 8 teams, 32 players and demo payments.
 | Players | any `<username>@nexusarena.gg` (e.g. `arjun_mehta@nexusarena.gg`) |
 
 Sign in at http://localhost:3000/login — the admin panel is at **/admin**, the organizer studio at **/create-tournament**.
+
+**Production admin setup (recommended):** register your real email on the live site first, then run this from the project folder against the same Atlas URI Vercel uses:
+
+```powershell
+$env:MONGODB_URI="mongodb+srv://USER:PASSWORD@CLUSTER.mongodb.net/nexus-arena"
+$env:ADMIN_EMAIL="you@example.com"
+npm run make-admin
+```
+
+It grants `super_admin` to that existing account without changing its password. Sign out and back in, then open `/admin`. Never share the Atlas URI. If you also seeded demo users on a public site, downgrade or ban the default demo admin/organizer accounts in **/admin/users**; their demo password is public.
 
 ## Step 6 — Verify everything works
 
@@ -267,15 +285,18 @@ AI_MODEL=meta-llama/llama-3.3-70b-instruct:free
 
 ## 6. Email notifications (optional) — Resend free tier
 
-1. Go to **https://resend.com** → sign up (3,000 emails/month free).
-2. **API Keys → Create API Key** → copy it:
+1. Go to **https://resend.com** → sign up and open **API Keys → Create API Key**.
+2. For a first test, add these values to `.env.local` (local) or Vercel → Settings → Environment Variables (deployed):
 
    ```env
    EMAIL_API_KEY=re_xxxxx
-   EMAIL_FROM="NEXUS ARENA <no-reply@yourdomain.com>"
+   EMAIL_FROM="NEXUS ARENA <onboarding@resend.dev>"
    ```
 
-Without it, emails are printed to the server console (perfect for development).
+   The Resend test sender can deliver only to the email address associated with your Resend account. To send to other players, add and verify a domain in Resend, then set `EMAIL_FROM` to an address on that verified domain, for example `NEXUS ARENA <no-reply@yourdomain.com>`.
+3. Restart the local dev server, or **redeploy** on Vercel after changing environment variables. Check the Resend dashboard's email logs for rejected sends.
+
+Without `EMAIL_API_KEY`, **no email is delivered**: locally, the reset link is printed in the dev terminal; in production, a safe warning is logged (the secret reset link is never put in production logs). Check spam/promotions too.
 
 ## Complete `.env.local` template
 
@@ -295,7 +316,7 @@ AI_API_KEY=
 AI_BASE_URL=https://api.openai.com/v1
 AI_MODEL=gpt-4o-mini
 EMAIL_API_KEY=
-EMAIL_FROM="NEXUS ARENA <no-reply@nexusarena.gg>"
+EMAIL_FROM="NEXUS ARENA <onboarding@resend.dev>"
 ```
 
 ---
@@ -384,8 +405,9 @@ Then set every new key in Vercel → Settings → Environment Variables → **Re
 | `Port 3000 is in use` | Close the other app, or run `npm run dev -- -p 3001`. |
 | `npm install` fails / `ERESOLVE` | Update Node.js to 20+ then delete `node_modules` and `package-lock.json`, run `npm install` again. |
 | Google button says "not configured" | That's fine — Google keys are optional. To enable, complete Part 2 → #3. |
+| Google `redirect_uri_mismatch` | In Google Cloud → Credentials → the same Web OAuth client used by the app, add the exact URI from the error details or server log `[auth] Google OAuth redirect URI:`. It must match scheme, domain, port and `/api/auth/google/callback`; update `NEXT_PUBLIC_APP_URL` on Vercel and redeploy if needed. |
 | Paid tournament says "payments not configured" | Add Razorpay keys (Part 2 → #4). Free tournaments always work. |
-| Emails not arriving | `EMAIL_API_KEY` is optional; without it emails print to the terminal console. |
+| Reset email not arriving | Set `EMAIL_API_KEY`; use `onboarding@resend.dev` only to test delivery to the email on your Resend account. For other recipients, verify a sending domain and set `EMAIL_FROM` to that domain. Redeploy/restart, then check Resend email logs and spam. |
 | Data disappeared | You were on `MONGODB_URI=memory` (resets on restart) — switch to Atlas. |
 | `next build` out of memory | Run `$env:NODE_OPTIONS="--max-old-space-size=3072"` (PowerShell) or `NODE_OPTIONS="--max-old-space-size=3072" npm run build`. |
 | Windows: scripts won't run (`running scripts is disabled`) | `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned` in PowerShell, or use `cmd` where `npm` works normally. |
