@@ -206,9 +206,9 @@ export default function HomePage() {
             { name: 'Valorant', color: '#ff4655', count: 24 },
             { name: 'BGMI', color: '#fbbf24', count: 31 },
             { name: 'Free Fire', color: '#f97316', count: 18 },
-            { name: 'CS2', color: '#3b82f6', count: 22 },
-            { name: 'League', color: '#00f0ff', count: 14 },
-            { name: 'COD Mobile', color: '#8b5cf6', count: 11 },
+            { name: 'CS2', color: '#6b9fea', count: 22 },
+            { name: 'League', color: '#62dce7', count: 14 },
+            { name: 'COD Mobile', color: '#9b8cf3', count: 11 },
           ].map((g) => (
             <Link
               key={g.name}

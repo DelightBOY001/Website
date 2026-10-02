@@ -61,7 +61,7 @@ export function FormatBadge({ format }: { format: string }) {
 export function Avatar({
   name,
   src,
-  color = '#00f0ff',
+  color = '#62dce7',
   size = 'md',
   className,
 }: {

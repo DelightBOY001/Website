@@ -7,28 +7,28 @@ const config: Config = {
     extend: {
       colors: {
         void: {
-          950: '#05060f',
-          900: '#0a0c1a',
-          850: '#0d1022',
-          800: '#11142b',
-          700: '#1a1f42',
-          600: '#252b5c',
+          950: '#0b121d',
+          900: '#111b29',
+          850: '#152234',
+          800: '#1a283b',
+          700: '#26384e',
+          600: '#354b66',
         },
         neon: {
-          DEFAULT: '#00f0ff',
-          cyan: '#00f0ff',
-          blue: '#3b82f6',
-          purple: '#8b5cf6',
-          pink: '#f43f5e',
-          lime: '#a3e635',
+          DEFAULT: '#62dce7',
+          cyan: '#62dce7',
+          blue: '#6b9fea',
+          purple: '#9b8cf3',
+          pink: '#ee7898',
+          lime: '#abd78a',
           amber: '#fbbf24',
-          green: '#22c55e',
+          green: '#5cc69b',
           red: '#ef4444',
         },
         surface: {
-          DEFAULT: 'rgba(17, 20, 43, 0.6)',
-          strong: 'rgba(26, 31, 66, 0.85)',
-          light: 'rgba(255, 255, 255, 0.04)',
+          DEFAULT: 'rgba(24, 38, 56, 0.82)',
+          strong: 'rgba(28, 44, 64, 0.94)',
+          light: 'rgba(255, 255, 255, 0.055)',
         },
       },
       fontFamily: {
@@ -38,19 +38,19 @@ const config: Config = {
       },
       backgroundImage: {
         'hero-radial':
-          'radial-gradient(ellipse 80% 60% at 50% -10%, rgba(0, 240, 255, 0.16), transparent 60%), radial-gradient(ellipse 60% 50% at 85% 20%, rgba(139, 92, 246, 0.12), transparent 55%)',
+          'radial-gradient(ellipse 80% 60% at 50% -10%, rgba(98, 220, 231, 0.16), transparent 60%), radial-gradient(ellipse 60% 50% at 85% 20%, rgba(155, 140, 243, 0.12), transparent 55%)',
         'card-shine':
           'linear-gradient(135deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0) 45%, rgba(255,255,255,0) 55%, rgba(255,255,255,0.04) 100%)',
         'neon-text':
-          'linear-gradient(120deg, #00f0ff 0%, #8b5cf6 50%, #f43f5e 100%)',
+          'linear-gradient(120deg, #62dce7 0%, #9b8cf3 50%, #ee7898 100%)',
         'grid-fade':
-          'linear-gradient(to bottom, rgba(0,240,255,0.05), transparent 40%)',
-        'bracket-line': 'linear-gradient(to right, #1a1f42, #252b5c)',
+          'linear-gradient(to bottom, rgba(98,220,231,0.05), transparent 40%)',
+        'bracket-line': 'linear-gradient(to right, #26384e, #354b66)',
       },
       boxShadow: {
-        'neon-sm': '0 0 12px rgba(0, 240, 255, 0.15)',
-        neon: '0 0 24px rgba(0, 240, 255, 0.22), 0 0 60px rgba(139, 92, 246, 0.12)',
-        'neon-lg': '0 0 40px rgba(0, 240, 255, 0.3), 0 0 100px rgba(139, 92, 246, 0.18)',
+        'neon-sm': '0 0 12px rgba(98, 220, 231, 0.15)',
+        neon: '0 0 24px rgba(98, 220, 231, 0.22), 0 0 60px rgba(155, 140, 243, 0.12)',
+        'neon-lg': '0 0 40px rgba(98, 220, 231, 0.3), 0 0 100px rgba(155, 140, 243, 0.18)',
         card: '0 8px 32px rgba(0, 0, 0, 0.45)',
         'inner-glass': 'inset 0 1px 0 rgba(255,255,255,0.06)',
       },
@@ -87,8 +87,8 @@ const config: Config = {
           '100%': { backgroundPosition: '200% 0' },
         },
         pulseGlow: {
-          '0%, 100%': { boxShadow: '0 0 12px rgba(0,240,255,0.25)' },
-          '50%': { boxShadow: '0 0 28px rgba(0,240,255,0.5)' },
+          '0%, 100%': { boxShadow: '0 0 12px rgba(98,220,231,0.25)' },
+          '50%': { boxShadow: '0 0 28px rgba(98,220,231,0.5)' },
         },
         float: {
           '0%, 100%': { transform: 'translateY(0px)' },

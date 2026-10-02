@@ -27,7 +27,7 @@ export interface TournamentCardData {
 
 export function TournamentCard({ t, compact }: { t: TournamentCardData; compact?: boolean }) {
   const fillPct = Math.round((t.participantsCount / Math.max(1, t.maxParticipants)) * 100);
-  const accent = t.game?.accentColor ?? '#00f0ff';
+  const accent = t.game?.accentColor ?? '#62dce7';
 
   return (
     <Link
@@ -43,7 +43,7 @@ export function TournamentCard({ t, compact }: { t: TournamentCardData; compact?
         style={{
           background: t.bannerUrl
             ? `url(${t.bannerUrl}) center/cover`
-            : `radial-gradient(ellipse 90% 120% at 20% 0%, ${accent}33, transparent 60%), radial-gradient(ellipse 80% 100% at 90% 20%, #8b5cf62e, transparent 55%), #0d1022`,
+            : `radial-gradient(ellipse 90% 120% at 20% 0%, ${accent}33, transparent 60%), radial-gradient(ellipse 80% 100% at 90% 20%, #9b8cf32e, transparent 55%), #152234`,
         }}
       >
         <div className="absolute inset-0 bg-gradient-to-t from-void-950 via-void-950/35 to-transparent" />

@@ -101,8 +101,8 @@ export default function TeamsPage() {
                   <div
                     className="flex h-14 w-14 items-center justify-center rounded-2xl text-lg font-bold text-white"
                     style={{
-                      background: `linear-gradient(135deg, ${team.color ?? '#8b5cf6'}44, ${team.color ?? '#8b5cf6'}11)`,
-                      border: `1px solid ${team.color ?? '#8b5cf6'}55`,
+                      background: `linear-gradient(135deg, ${team.color ?? '#9b8cf3'}44, ${team.color ?? '#9b8cf3'}11)`,
+                      border: `1px solid ${team.color ?? '#9b8cf3'}55`,
                     }}
                   >
                     {(team.tag || team.name).slice(0, 3).toUpperCase()}

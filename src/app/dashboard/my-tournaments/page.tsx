@@ -75,7 +75,7 @@ export default function MyTournamentsPage() {
                 <div
                   className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl"
                   style={{
-                    background: `linear-gradient(135deg, ${t.game?.accentColor ?? '#00f0ff'}33, transparent)`,
+                    background: `linear-gradient(135deg, ${t.game?.accentColor ?? '#62dce7'}33, transparent)`,
                     border: '1px solid rgba(255,255,255,0.1)',
                   }}
                 >

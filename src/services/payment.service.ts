@@ -165,7 +165,7 @@ export async function createRegistrationOrder(
         name: user.name,
         email: user.email,
       },
-      theme: { color: '#00f0ff' },
+      theme: { color: '#62dce7' },
     },
   };
 }

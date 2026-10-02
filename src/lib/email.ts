@@ -60,13 +60,13 @@ export async function sendEmail(payload: EmailPayload): Promise<boolean> {
 
 const brand = (title: string, body: string) => `<!doctype html>
 <html>
-  <body style="margin:0;padding:0;background:#0a0c1a;font-family:Segoe UI,Roboto,Helvetica,Arial,sans-serif;">
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#0a0c1a;padding:32px 12px;">
+  <body style="margin:0;padding:0;background:#111b29;font-family:Segoe UI,Roboto,Helvetica,Arial,sans-serif;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#111b29;padding:32px 12px;">
       <tr><td align="center">
-        <table role="presentation" width="560" cellpadding="0" cellspacing="0" style="background:#11142b;border:1px solid #1a1f42;border-radius:16px;overflow:hidden;">
+        <table role="presentation" width="560" cellpadding="0" cellspacing="0" style="background:#1a283b;border:1px solid #26384e;border-radius:16px;overflow:hidden;">
           <tr>
-            <td style="padding:28px 32px;background:linear-gradient(120deg,#00f0ff 0%,#8b5cf6 100%);">
-              <span style="font-size:20px;font-weight:800;letter-spacing:3px;color:#05060f;">NEXUS ARENA</span>
+            <td style="padding:28px 32px;background:linear-gradient(120deg,#62dce7 0%,#9b8cf3 100%);">
+              <span style="font-size:20px;font-weight:800;letter-spacing:3px;color:#0b121d;">NEXUS ARENA</span>
             </td>
           </tr>
           <tr>
@@ -76,7 +76,7 @@ const brand = (title: string, body: string) => `<!doctype html>
             </td>
           </tr>
           <tr>
-            <td style="padding:20px 32px;border-top:1px solid #1a1f42;font-size:12px;color:#64748b;">
+            <td style="padding:20px 32px;border-top:1px solid #26384e;font-size:12px;color:#64748b;">
               © ${new Date().getFullYear()} NEXUS ARENA · Compete. Conquer. Dominate.<br/>
               If you didn't request this email, you can safely ignore it.
             </td>
@@ -95,8 +95,8 @@ export const emailTemplates = {
         `Welcome, ${name}!`,
         `Confirm your email address to activate your player profile and start competing.
          <br/><br/>
-         <a href="${url}" style="display:inline-block;background:#00f0ff;color:#05060f;font-weight:700;padding:12px 28px;border-radius:10px;text-decoration:none;letter-spacing:1px;">VERIFY EMAIL</a>
-         <br/><br/>Or open this link: <a href="${url}" style="color:#00f0ff;">${url}</a>`,
+         <a href="${url}" style="display:inline-block;background:#62dce7;color:#0b121d;font-weight:700;padding:12px 28px;border-radius:10px;text-decoration:none;letter-spacing:1px;">VERIFY EMAIL</a>
+         <br/><br/>Or open this link: <a href="${url}" style="color:#62dce7;">${url}</a>`,
       ),
     };
   },
@@ -107,8 +107,8 @@ export const emailTemplates = {
         `Password reset requested`,
         `Hi ${name}, we received a request to reset your password. This link expires in 60 minutes.
          <br/><br/>
-         <a href="${url}" style="display:inline-block;background:#8b5cf6;color:#ffffff;font-weight:700;padding:12px 28px;border-radius:10px;text-decoration:none;letter-spacing:1px;">RESET PASSWORD</a>
-         <br/><br/>Or open this link: <a href="${url}" style="color:#00f0ff;">${url}</a>
+         <a href="${url}" style="display:inline-block;background:#9b8cf3;color:#ffffff;font-weight:700;padding:12px 28px;border-radius:10px;text-decoration:none;letter-spacing:1px;">RESET PASSWORD</a>
+         <br/><br/>Or open this link: <a href="${url}" style="color:#62dce7;">${url}</a>
          <br/><br/>If this wasn't you, secure your account immediately.`,
       ),
     };
@@ -119,7 +119,7 @@ export const emailTemplates = {
       html: brand(
         `You're registered!`,
         `Hi ${name}, your payment of <strong style="color:#22c55e;">${amount}</strong> for <strong>${tournament}</strong> was successful.
-         <br/><br/>Transaction ID: <code style="color:#00f0ff;">${txnId}</code>
+         <br/><br/>Transaction ID: <code style="color:#62dce7;">${txnId}</code>
          <br/>Your slot is locked in. GLHF!`,
       ),
     };

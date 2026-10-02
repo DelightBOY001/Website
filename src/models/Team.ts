@@ -23,7 +23,7 @@ const TeamSchema = defineSchema(
     tag: { type: String, trim: true, uppercase: true, maxlength: 8 },
     slug: { type: String, required: true, unique: true, lowercase: true },
     logo: { type: String, default: '' },
-    color: { type: String, default: '#8b5cf6' },
+    color: { type: String, default: '#9b8cf3' },
     description: { type: String, default: '', maxlength: 1000 },
     game: { type: Schema.Types.ObjectId, ref: 'Game', index: true },
     captain: { type: Schema.Types.ObjectId, ref: 'User', required: true, index: true },

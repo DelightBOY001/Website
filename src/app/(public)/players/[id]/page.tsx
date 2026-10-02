@@ -38,7 +38,7 @@ export default function PlayerProfilePage() {
         <div
           className="h-36"
           style={{
-            background: `radial-gradient(ellipse 100% 130% at 20% 0%, ${u.avatarColor ?? '#00f0ff'}33, transparent 60%), #0d1022`,
+            background: `radial-gradient(ellipse 100% 130% at 20% 0%, ${u.avatarColor ?? '#62dce7'}33, transparent 60%), #152234`,
           }}
         />
         <div className="px-8 pb-8">

@@ -12,7 +12,7 @@ const GameSchema = defineSchema(
     genre: { type: String, default: '', maxlength: 40 },
     platforms: [{ type: String }],
     coverImage: { type: String, default: '' },
-    accentColor: { type: String, default: '#00f0ff' },
+    accentColor: { type: String, default: '#62dce7' },
     active: { type: Boolean, default: true },
     featured: { type: Boolean, default: false },
     playerCount: { type: Number, default: 0 },

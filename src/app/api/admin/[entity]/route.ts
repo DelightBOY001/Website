@@ -76,14 +76,29 @@ export const GET = handler(async (req: NextRequest, ctx: { params: Promise<{ ent
       return jsonOk(serialize({ items, total, page, limit }));
     }
     case 'matches': {
-      const filter: Record<string, unknown> = {};
+      const filter: Record<string, any> = {};
       if (q.status) filter.status = q.status;
+      if (q.search?.trim()) {
+        const term = q.search.trim();
+        const escaped = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const or: Record<string, unknown>[] = [
+          { 'participant1.name': { $regex: escaped, $options: 'i' } },
+          { 'participant2.name': { $regex: escaped, $options: 'i' } },
+        ];
+        const matchNumber = Number(term);
+        if (Number.isInteger(matchNumber) && matchNumber >= 0) or.push({ matchNumber });
+        const matchingTournaments = await TournamentModel.find({
+          title: { $regex: escaped, $options: 'i' },
+        }).distinct('_id');
+        if (matchingTournaments.length) or.push({ tournament: { $in: matchingTournaments } });
+        filter.$or = or;
+      }
       const [items, total] = await Promise.all([
         MatchModel.find(filter)
-          .sort({ scheduledAt: -1 })
+          .sort({ scheduledAt: -1, createdAt: -1 })
           .skip(skip)
           .limit(limit)
-          .populate('tournament', 'title slug')
+          .populate('tournament', 'title slug status')
           .lean(),
         MatchModel.countDocuments(filter),
       ]);

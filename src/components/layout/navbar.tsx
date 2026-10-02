@@ -139,7 +139,7 @@ export function Navbar() {
               </Link>
               <div className="group relative">
                 <button className="flex items-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.04] px-2.5 py-1.5 transition hover:border-neon-cyan/30">
-                  <Avatar name={user.name} src={user.avatar} color="#00f0ff" size="xs" />
+                  <Avatar name={user.name} src={user.avatar} color="#62dce7" size="xs" />
                   <span className="max-w-[110px] truncate text-sm font-medium text-white">
                     {user.name.split(' ')[0]}
                   </span>

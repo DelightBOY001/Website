@@ -10,6 +10,7 @@
     "typecheck": "tsc --noEmit",
     "seed": "node --import tsx scripts/seed.ts",
     "make-admin": "node --import tsx scripts/promote-admin.ts",
+    "seed:games": "node --import tsx scripts/seed-games.ts",
     "test:api": "node --import tsx scripts/test-api.ts"
   },
   "dependencies": {

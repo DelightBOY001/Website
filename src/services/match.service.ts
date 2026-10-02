@@ -2,6 +2,7 @@ import { Types } from 'mongoose';
 import { connectDB } from '@/lib/db';
 import {
   MatchModel,
+  LeaderboardEntryModel,
   RegistrationModel,
   TeamModel,
   TournamentModel,
@@ -16,6 +17,7 @@ import { notifyMany, notifyUser } from './notification.service';
 import { recordMatchResultStats } from './leaderboard.service';
 import {
   advanceGroupStage,
+  computeStandings,
   generateNextSwissRound,
   resolveWinnerSlots,
 } from './bracket.service';
@@ -152,12 +154,194 @@ export async function reportMatchResult(
   return { match: saved, winnerName };
 }
 
-/** Walk-over / dispute resolution by organizer/moderator. */
+/** Recompute a player's active and best win streak from completed match history. */
+async function recomputeUserWinStreak(userId: string) {
+  const matches = await MatchModel.find({
+    status: { $in: ['completed', 'walkover'] },
+    $or: [
+      { 'participant1.ref': userId },
+      { 'participant2.ref': userId },
+    ],
+  })
+    .sort({ completedAt: 1, createdAt: 1 })
+    .select('winner.ref completedAt createdAt')
+    .lean();
+
+  let current = 0;
+  let best = 0;
+  for (const match of matches as any[]) {
+    if (String(match.winner?.ref ?? '') === userId) {
+      current += 1;
+      best = Math.max(best, current);
+    } else {
+      current = 0;
+    }
+  }
+  await UserModel.findByIdAndUpdate(userId, {
+    $set: { 'stats.winStreak': current, 'stats.bestWinStreak': best },
+  });
+}
+
+function quarterFor(date: Date) {
+  return `${date.getFullYear()}-Q${Math.floor(date.getMonth() / 3) + 1}`;
+}
+
+/** Apply or reconcile player/team ranking deltas when an admin changes a result. */
+async function reconcileOverrideStats(
+  match: MatchDoc,
+  tournament: TournamentDoc,
+  oldWinnerRef: string | null,
+  oldLoserRef: string | null,
+  statsWereRecorded: boolean,
+  oldCompletedAt: Date,
+) {
+  const newWinnerRef = match.winner?.ref ? String(match.winner.ref) : null;
+  const newLoserRef = match.loser?.ref ? String(match.loser.ref) : null;
+
+  // Older walkovers and unresolved matches may not have had stats applied.
+  if (!statsWereRecorded || !oldWinnerRef || !oldLoserRef) {
+    await recordMatchResultStats(match, tournament);
+    for (const participant of [match.participant1, match.participant2]) {
+      if (participant.kind === 'user' && participant.ref) {
+        await recomputeUserWinStreak(String(participant.ref));
+      }
+    }
+    return;
+  }
+  if (oldWinnerRef === newWinnerRef && oldLoserRef === newLoserRef) return;
+
+  const isTeam = tournament.type === 'team';
+  const oldPoints = (won: boolean) => isTeam ? (won ? 12 : 3) : (won ? 14 : 5);
+  const season = quarterFor(oldCompletedAt);
+
+  for (const participant of [match.participant1, match.participant2]) {
+    const ref = participant.ref ? String(participant.ref) : '';
+    if (!ref) continue;
+    const wasWinner = ref === oldWinnerRef;
+    const wasLoser = ref === oldLoserRef;
+    const isWinner = ref === newWinnerRef;
+    const isLoser = ref === newLoserRef;
+    const winsDelta = Number(isWinner) - Number(wasWinner);
+    const lossesDelta = Number(isLoser) - Number(wasLoser);
+    const pointsDelta = oldPoints(isWinner) - oldPoints(wasWinner);
+    if (!winsDelta && !lossesDelta && !pointsDelta) continue;
+
+    if (isTeam) {
+      await TeamModel.findByIdAndUpdate(ref, {
+        $inc: {
+          'stats.wins': winsDelta,
+          'stats.losses': lossesDelta,
+          'stats.points': pointsDelta,
+        },
+      });
+      continue;
+    }
+
+    await UserModel.findByIdAndUpdate(ref, {
+      $inc: {
+        'stats.wins': winsDelta,
+        'stats.losses': lossesDelta,
+        'stats.points': pointsDelta,
+      },
+    });
+
+    const entry = await LeaderboardEntryModel.findOneAndUpdate(
+      { user: ref, game: tournament.game ?? null, season },
+      { $inc: { wins: winsDelta, losses: lossesDelta, points: pointsDelta } },
+      { new: true },
+    );
+    if (entry) {
+      const history = await MatchModel.find({
+        status: { $in: ['completed', 'walkover'] },
+        $or: [{ 'participant1.ref': ref }, { 'participant2.ref': ref }],
+      })
+        .populate('tournament', 'game')
+        .sort({ completedAt: 1, createdAt: 1 })
+        .select('winner.ref completedAt createdAt tournament')
+        .lean();
+      const form = (history as any[])
+        .filter((item) => {
+          const matchDate = item.completedAt ?? item.createdAt;
+          return (
+            quarterFor(new Date(matchDate)) === season &&
+            String(item.tournament?.game ?? '') === String(tournament.game ?? '')
+          );
+        })
+        .map((item) => (String(item.winner?.ref ?? '') === ref ? 'W' : 'L'))
+        .slice(-10);
+      await LeaderboardEntryModel.updateOne(
+        { _id: entry._id },
+        {
+          $set: {
+            winRate: entry.matchesPlayed ? Math.round((entry.wins / entry.matchesPlayed) * 1000) / 10 : 0,
+            form,
+          },
+        },
+      );
+    }
+    await recomputeUserWinStreak(ref);
+  }
+}
+
+/** Recalculate the displayed champion after correcting a closed tournament's result. */
+async function refreshClosedTournamentWinner(tournamentId: string) {
+  const tournament = (await TournamentModel.findById(tournamentId)) as TournamentDoc | null;
+  if (!tournament || tournament.status !== 'completed') return;
+  const matches = await MatchModel.find({ tournament: tournamentId }).lean();
+  let winner: any = null;
+  let runnerUp: any = null;
+
+  if (tournament.format === 'round_robin' || tournament.format === 'swiss') {
+    const standings = computeStandings(matches as any);
+    if (standings[0]) winner = { kind: tournament.type === 'team' ? 'team' : 'user', ref: standings[0].ref, name: standings[0].name };
+    if (standings[1]) runnerUp = { kind: tournament.type === 'team' ? 'team' : 'user', ref: standings[1].ref, name: standings[1].name };
+  } else {
+    let finalMatch: any = null;
+    if (tournament.format === 'double_elimination') {
+      finalMatch = matches.find((m: any) => m.stage === 'grand_final' && ['completed', 'walkover'].includes(m.status));
+    }
+    if (!finalMatch) {
+      finalMatch = matches
+        .filter((m: any) => !m.isThirdPlace && m.stage !== 'group' && ['completed', 'walkover'].includes(m.status))
+        .sort((a: any, b: any) => b.matchNumber - a.matchNumber)[0];
+    }
+    if (finalMatch) {
+      winner = finalMatch.winner;
+      runnerUp = finalMatch.loser;
+    }
+  }
+
+  if (!winner || !winner.ref) return;
+  const oldWinnerRef = tournament.winner?.ref ? String(tournament.winner.ref) : null;
+  const newWinnerRef = String(winner.ref);
+  if (oldWinnerRef !== newWinnerRef) {
+    const prize = tournament.prizes?.[0]?.amount ?? 0;
+    const changeAward = async (kind: string, ref: string, delta: number) => {
+      const model: any = kind === 'team' ? TeamModel : UserModel;
+      const doc = await model.findById(ref);
+      if (!doc) return;
+      doc.stats = doc.stats ?? {};
+      doc.stats.tournamentsWon = Math.max(0, (doc.stats.tournamentsWon ?? 0) + delta);
+      doc.stats.earnings = Math.max(0, (doc.stats.earnings ?? 0) + delta * prize);
+      await doc.save();
+    };
+    if (oldWinnerRef) await changeAward(tournament.winner.kind, oldWinnerRef, -1);
+    await changeAward(winner.kind, newWinnerRef, 1);
+  }
+
+  tournament.winner = winner as any;
+  if (runnerUp) tournament.runnerUp = runnerUp as any;
+  await tournament.save();
+  realtime.tournament(tournamentId, 'tournament:completed', { winner: tournament.winner, tournamentId });
+}
+
+/** Organizer/staff result override, including safe corrections before downstream matches start. */
 export async function setMatchWinner(
   matchId: string,
   admin: SessionUser,
   winnerSlot: 1 | 2,
-  reason = 'Walkover',
+  reason = 'Admin override',
+  scores?: { score1: number; score2: number },
 ) {
   await connectDB();
   const match = (await MatchModel.findById(matchId)) as MatchDoc | null;
@@ -169,27 +353,86 @@ export async function setMatchWinner(
   if (!hasRole(admin, 'moderator') && !isOrganizer) {
     throw new ForbiddenError('Only the organizer or moderators can override a result.');
   }
+  if (match.status === 'cancelled') throw new ConflictError('A cancelled match cannot receive a result.');
+  if (tournament.status === 'completed' && match.status !== 'completed' && match.status !== 'walkover') {
+    throw new ConflictError('This completed tournament cannot accept new match results.');
+  }
+  if (match.participant1.kind === 'tbd' || match.participant2.kind === 'tbd' || !match.participant1.ref || !match.participant2.ref) {
+    throw new ValidationError('Both participants must be determined before setting a winner.');
+  }
+  if (scores && (scores.score1 === scores.score2 || (scores.score1 > scores.score2 ? 1 : 2) !== winnerSlot)) {
+    throw new ValidationError('The selected winner must have the higher score.');
+  }
 
-  match.status = 'walkover';
-  match.completedAt = new Date();
-  match.notes = reason;
-  match.participant1.score = winnerSlot === 1 ? 1 : 0;
-  match.participant2.score = winnerSlot === 2 ? 1 : 0;
-  await resolveWinnerSlots(match, winnerSlot);
-  await checkTournamentCompletion(String(tournament._id));
+  const oldWinnerRef = match.winner?.ref ? String(match.winner.ref) : null;
+  const oldLoserRef = match.loser?.ref ? String(match.loser.ref) : null;
+  const statsWereRecorded = Boolean(match.reportedBy);
+  const oldCompletedAt = match.completedAt ?? new Date();
+  const winnerPart = winnerSlot === 1 ? match.participant1 : match.participant2;
+  const nextWinnerRef = winnerPart.ref ? String(winnerPart.ref) : null;
 
-  await logAdminAction(admin, 'match:override', 'match', String(match._id), {
-    winnerSlot,
+  if (oldWinnerRef && oldWinnerRef !== nextWinnerRef) {
+    const nextNumbers = [match.nextMatchNumber, match.loserNextMatchNumber].filter((n) => n > 0);
+    if (nextNumbers.length) {
+      const downstream = await MatchModel.find({ tournament: match.tournament, matchNumber: { $in: nextNumbers } }).select('status').lean();
+      if (downstream.some((m: any) => ['live', 'completed', 'walkover'].includes(m.status))) {
+        throw new ConflictError('A later match has already started or finished. Correct that later result first.');
+      }
+    }
+  }
+
+  const isWalkover = !scores;
+  match.participant1.score = scores ? scores.score1 : winnerSlot === 1 ? 1 : 0;
+  match.participant2.score = scores ? scores.score2 : winnerSlot === 2 ? 1 : 0;
+  match.scores = scores
+    ? [
+        { participant: 1, score: scores.score1, gameNumber: 1 },
+        { participant: 2, score: scores.score2, gameNumber: 1 },
+      ] as any
+    : [];
+  match.startedAt = match.startedAt ?? new Date();
+  match.completedAt = oldWinnerRef ? oldCompletedAt : new Date();
+  match.notes = reason.slice(0, 1000);
+  match.disputeOpen = false;
+  match.disputeReason = '';
+  match.status = isWalkover ? 'walkover' : 'completed';
+
+  let saved = await resolveWinnerSlots(match, winnerSlot);
+  if (isWalkover) {
+    saved.status = 'walkover';
+    await saved.save();
+  }
+  saved.reportedBy = new Types.ObjectId(admin.id) as any;
+  await saved.save();
+
+  await reconcileOverrideStats(
+    saved,
+    tournament as TournamentDoc,
+    oldWinnerRef,
+    oldLoserRef,
+    statsWereRecorded,
+    oldCompletedAt,
+  );
+
+  if (tournament.status !== 'completed') await checkTournamentCompletion(String(tournament._id));
+  else await refreshClosedTournamentWinner(String(tournament._id));
+
+  await logAdminAction(admin, 'match:result_override', 'match', String(saved._id), {
+    previousWinner: oldWinnerRef,
+    winner: nextWinnerRef,
     reason,
-    tournament: tournament.title,
+    score1: saved.participant1.score,
+    score2: saved.participant2.score,
   });
 
   realtime.match(String(tournament._id), 'match:completed', {
-    matchId: String(match._id),
-    matchNumber: match.matchNumber,
-    walkover: true,
+    matchId: String(saved._id),
+    matchNumber: saved.matchNumber,
+    winner: saved.winner,
+    tournamentId: String(tournament._id),
+    corrected: Boolean(oldWinnerRef),
   });
-  return match;
+  return saved;
 }
 
 /** Detect the final match of the tournament and close it out. */

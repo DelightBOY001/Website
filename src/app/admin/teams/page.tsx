@@ -69,7 +69,7 @@ export default function AdminTeamsPage() {
                     <div className="flex items-center gap-3">
                       <div
                         className="flex h-9 w-9 items-center justify-center rounded-lg text-xs font-bold text-white"
-                        style={{ background: `${t.color ?? '#8b5cf6'}33`, border: `1px solid ${t.color ?? '#8b5cf6'}55` }}
+                        style={{ background: `${t.color ?? '#9b8cf3'}33`, border: `1px solid ${t.color ?? '#9b8cf3'}55` }}
                       >
                         {(t.tag || t.name).slice(0, 3)}
                       </div>

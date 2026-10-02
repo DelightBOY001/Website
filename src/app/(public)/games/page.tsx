@@ -53,7 +53,7 @@ export default function GamesPage() {
                 <div
                   className="relative h-44"
                   style={{
-                    background: `radial-gradient(ellipse 100% 120% at 20% 0%, ${g.accentColor}44, transparent 60%), radial-gradient(ellipse 80% 100% at 95% 90%, ${g.accentColor}22, transparent 55%), #0d1022`,
+                    background: `radial-gradient(ellipse 100% 120% at 20% 0%, ${g.accentColor}44, transparent 60%), radial-gradient(ellipse 80% 100% at 95% 90%, ${g.accentColor}22, transparent 55%), #152234`,
                   }}
                 >
                   <div className="absolute inset-0 bg-gradient-to-t from-void-950/90 to-transparent" />

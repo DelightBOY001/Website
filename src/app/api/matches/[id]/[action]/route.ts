@@ -9,6 +9,10 @@ import { reportMatchResult, setMatchWinner } from '@/services/match.service';
 const winnerSchema = z.object({
   winnerSlot: z.union([z.literal(1), z.literal(2)]),
   reason: z.string().max(500).optional(),
+  score1: z.number().int().min(0).max(99).optional(),
+  score2: z.number().int().min(0).max(99).optional(),
+}).refine((value) => (value.score1 === undefined) === (value.score2 === undefined), {
+  message: 'Provide both scores, or omit both to record a walkover.',
 });
 
 /**
@@ -30,7 +34,15 @@ export const POST = handler(async (req: NextRequest, ctx: { params: Promise<{ id
     case 'winner': {
       limitFor(req, 'write');
       const body = await parseBody(req, winnerSchema);
-      const match = await setMatchWinner(id, session.user, body.winnerSlot, body.reason);
+      const match = await setMatchWinner(
+        id,
+        session.user,
+        body.winnerSlot,
+        body.reason,
+        body.score1 !== undefined && body.score2 !== undefined
+          ? { score1: body.score1, score2: body.score2 }
+          : undefined,
+      );
       return jsonOk(serialize({ ok: true, match }));
     }
     default:

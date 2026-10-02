@@ -123,7 +123,7 @@ export default function TournamentDetailPage() {
         style={{
           background: t.bannerUrl
             ? `url(${t.bannerUrl}) center/cover`
-            : `radial-gradient(ellipse 90% 130% at 15% 0%, ${t.game?.accentColor ?? '#00f0ff'}33, transparent 60%), radial-gradient(ellipse 70% 100% at 85% 30%, #8b5cf62e, transparent 55%), #0d1022`,
+            : `radial-gradient(ellipse 90% 130% at 15% 0%, ${t.game?.accentColor ?? '#62dce7'}33, transparent 60%), radial-gradient(ellipse 70% 100% at 85% 30%, #9b8cf32e, transparent 55%), #152234`,
         }}
       >
         <div className="absolute inset-0 bg-gradient-to-t from-void-950 via-void-950/60 to-void-950/20" />

@@ -16,7 +16,7 @@ import { emailTemplates, sendEmail } from '@/lib/email';
 import type { SessionUser } from '@/types';
 import type { UserRole } from '@/models/common';
 
-const AVATAR_COLORS = ['#00f0ff', '#8b5cf6', '#f43f5e', '#22c55e', '#fbbf24', '#3b82f6', '#a3e635'];
+const AVATAR_COLORS = ['#62dce7', '#9b8cf3', '#f43f5e', '#22c55e', '#fbbf24', '#6b9fea', '#abd78a'];
 
 export function toSessionUser(user: UserDoc): SessionUser {
   return {

@@ -70,7 +70,7 @@ export default function TeamDetailPage() {
         <div
           className="h-36"
           style={{
-            background: `radial-gradient(ellipse 100% 130% at 15% 0%, ${team.color ?? '#8b5cf6'}44, transparent 60%), #0d1022`,
+            background: `radial-gradient(ellipse 100% 130% at 15% 0%, ${team.color ?? '#9b8cf3'}44, transparent 60%), #152234`,
           }}
         />
         <div className="px-8 pb-8">
@@ -78,8 +78,8 @@ export default function TeamDetailPage() {
             <div
               className="flex h-20 w-20 items-center justify-center rounded-2xl text-2xl font-bold text-white ring-4 ring-void-950"
               style={{
-                background: `linear-gradient(135deg, ${team.color ?? '#8b5cf6'}55, ${team.color ?? '#8b5cf6'}22)`,
-                border: `1px solid ${team.color ?? '#8b5cf6'}66`,
+                background: `linear-gradient(135deg, ${team.color ?? '#9b8cf3'}55, ${team.color ?? '#9b8cf3'}22)`,
+                border: `1px solid ${team.color ?? '#9b8cf3'}66`,
               }}
             >
               {(team.tag || team.name).slice(0, 3).toUpperCase()}

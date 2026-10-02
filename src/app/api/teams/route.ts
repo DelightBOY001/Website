@@ -78,7 +78,7 @@ export const POST = handler(async (req: NextRequest) => {
     description: body.description ?? '',
     game: body.game ?? null,
     maxSize: body.maxSize ?? 5,
-    color: body.color ?? '#8b5cf6',
+    color: body.color ?? '#9b8cf3',
     logo: body.logo ?? '',
     captain: session.user.id,
     inviteCode: randomId('inv').toUpperCase(),

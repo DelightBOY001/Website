@@ -26,8 +26,8 @@ export function BarChart({
       <svg viewBox={`0 0 100 ${height}`} className="w-full" preserveAspectRatio="none" style={{ height }}>
         <defs>
           <linearGradient id="barGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#00f0ff" stopOpacity="0.9" />
-            <stop offset="100%" stopColor="#8b5cf6" stopOpacity="0.55" />
+            <stop offset="0%" stopColor="#62dce7" stopOpacity="0.9" />
+            <stop offset="100%" stopColor="#9b8cf3" stopOpacity="0.55" />
           </linearGradient>
         </defs>
         {data.map((d, i) => {
@@ -86,19 +86,19 @@ export function LineChart({
       <svg viewBox={`0 0 100 ${height}`} className="w-full" style={{ height }}>
         <defs>
           <linearGradient id={`lineFill-${id}`} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#00f0ff" stopOpacity="0.35" />
-            <stop offset="100%" stopColor="#00f0ff" stopOpacity="0" />
+            <stop offset="0%" stopColor="#62dce7" stopOpacity="0.35" />
+            <stop offset="100%" stopColor="#62dce7" stopOpacity="0" />
           </linearGradient>
           <linearGradient id={`lineStroke-${id}`} x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%" stopColor="#00f0ff" />
-            <stop offset="100%" stopColor="#8b5cf6" />
+            <stop offset="0%" stopColor="#62dce7" />
+            <stop offset="100%" stopColor="#9b8cf3" />
           </linearGradient>
         </defs>
         <path d={area} fill={`url(#lineFill-${id})`} />
         <path d={path} fill="none" stroke={`url(#lineStroke-${id})`} strokeWidth="1.6" strokeLinecap="round" />
         {pts.map((p, i) => (
           <g key={`${p.label}-${i}`}>
-            <circle cx={p.x} cy={p.y} r="1.8" fill="#00f0ff" />
+            <circle cx={p.x} cy={p.y} r="1.8" fill="#62dce7" />
             <text x={p.x} y={height - 8} textAnchor="middle" fontSize="7" fill="#64748b">
               {p.label}
             </text>

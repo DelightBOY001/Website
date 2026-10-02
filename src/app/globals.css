@@ -3,11 +3,11 @@
 @tailwind utilities;
 
 :root {
-  --font-display: 'Orbitron', 'Rajdhani', system-ui, sans-serif;
-  --font-body: 'Inter', 'Segoe UI', system-ui, sans-serif;
-  --neon-cyan: #00f0ff;
-  --neon-purple: #8b5cf6;
-  --neon-pink: #f43f5e;
+  --font-display: 'Space Grotesk', system-ui, sans-serif;
+  --font-body: 'Manrope', 'Segoe UI', system-ui, sans-serif;
+  --neon-cyan: #62dce7;
+  --neon-purple: #9b8cf3;
+  --neon-pink: #ee7898;
   color-scheme: dark;
 }
 
@@ -18,13 +18,13 @@
   body {
     @apply bg-void-950 text-slate-200 font-body antialiased;
     background-image:
-      radial-gradient(ellipse 70% 40% at 50% -5%, rgba(0, 240, 255, 0.07), transparent 55%),
-      radial-gradient(ellipse 50% 35% at 90% 10%, rgba(139, 92, 246, 0.06), transparent 50%);
+      radial-gradient(ellipse 70% 40% at 50% -5%, rgba(98, 220, 231, 0.07), transparent 55%),
+      radial-gradient(ellipse 50% 35% at 90% 10%, rgba(155, 140, 243, 0.06), transparent 50%);
     background-attachment: fixed;
     min-height: 100vh;
   }
   ::selection {
-    background: rgba(0, 240, 255, 0.3);
+    background: rgba(98, 220, 231, 0.3);
     color: #fff;
   }
   ::-webkit-scrollbar {
@@ -32,15 +32,15 @@
     height: 10px;
   }
   ::-webkit-scrollbar-track {
-    background: #0a0c1a;
+    background: #111b29;
   }
   ::-webkit-scrollbar-thumb {
-    background: linear-gradient(180deg, #1a1f42, #252b5c);
+    background: linear-gradient(180deg, #26384e, #354b66);
     border-radius: 8px;
-    border: 2px solid #0a0c1a;
+    border: 2px solid #111b29;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(180deg, #252b5c, #3b3f7c);
+    background: linear-gradient(180deg, #354b66, #526a87);
   }
   h1, h2, h3, h4, h5, h6 {
     @apply font-display;
@@ -53,7 +53,7 @@
   input:-webkit-autofill,
   input:-webkit-autofill:focus {
     -webkit-text-fill-color: #e2e8f0;
-    -webkit-box-shadow: 0 0 0 1000px #11142b inset;
+    -webkit-box-shadow: 0 0 0 1000px #1a283b inset;
     transition: background-color 5000s ease-in-out 0s;
   }
 }
@@ -81,7 +81,7 @@
     transform: translateY(-3px);
     box-shadow:
       0 16px 48px rgba(0, 0, 0, 0.5),
-      0 0 32px rgba(0, 240, 255, 0.12),
+      0 0 32px rgba(98, 220, 231, 0.12),
       inset 0 1px 0 rgba(255, 255, 255, 0.07);
   }
 
@@ -90,11 +90,11 @@
     @apply bg-neon-text bg-clip-text text-transparent;
   }
   .text-glow {
-    text-shadow: 0 0 18px rgba(0, 240, 255, 0.55);
+    text-shadow: 0 0 18px rgba(98, 220, 231, 0.55);
   }
   .neon-ring {
     @apply ring-1 ring-neon-cyan/40;
-    box-shadow: 0 0 22px rgba(0, 240, 255, 0.18);
+    box-shadow: 0 0 22px rgba(98, 220, 231, 0.18);
   }
 
   /* ── Buttons ────────────────────────────────────────────────── */
@@ -108,11 +108,11 @@
   }
   .btn-primary {
     @apply btn text-void-950 bg-gradient-to-r from-neon-cyan to-neon-blue px-6 py-3;
-    box-shadow: 0 4px 22px rgba(0, 240, 255, 0.32);
+    box-shadow: 0 4px 22px rgba(98, 220, 231, 0.32);
   }
   .btn-primary:hover:not(:disabled) {
     transform: translateY(-2px);
-    box-shadow: 0 8px 34px rgba(0, 240, 255, 0.48);
+    box-shadow: 0 8px 34px rgba(98, 220, 231, 0.48);
   }
   .btn-secondary {
     @apply btn text-white bg-white/[0.06] border border-white/[0.12] px-6 py-3 hover:bg-white/[0.12]
@@ -204,8 +204,8 @@
   /* ── Grid backgrounds ───────────────────────────────────────── */
   .bg-grid {
     background-image:
-      linear-gradient(rgba(0, 240, 255, 0.05) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(0, 240, 255, 0.05) 1px, transparent 1px);
+      linear-gradient(rgba(98, 220, 231, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(98, 220, 231, 0.05) 1px, transparent 1px);
     background-size: 44px 44px;
     mask-image: radial-gradient(ellipse 85% 70% at 50% 25%, black 25%, transparent 85%);
     -webkit-mask-image: radial-gradient(ellipse 85% 70% at 50% 25%, black 25%, transparent 85%);
@@ -217,19 +217,19 @@
   }
   .bracket-card:hover {
     @apply border-neon-cyan/35;
-    box-shadow: 0 0 22px rgba(0, 240, 255, 0.14);
+    box-shadow: 0 0 22px rgba(98, 220, 231, 0.14);
   }
   .bracket-connector {
-    stroke: #252b5c;
+    stroke: #354b66;
     stroke-width: 2;
     fill: none;
   }
   .bracket-connector-active {
-    stroke: rgba(0, 240, 255, 0.5);
+    stroke: rgba(98, 220, 231, 0.5);
   }
   .bracket-scroll {
     scrollbar-width: thin;
-    scrollbar-color: #252b5c transparent;
+    scrollbar-color: #354b66 transparent;
   }
 
   /* ── Marquee ticker ─────────────────────────────────────────── */
@@ -239,16 +239,16 @@
   }
 
   /* ── Stat cards ─────────────────────────────────────────────── */
-  .stat-glow-cyan { box-shadow: inset 0 1px 0 rgba(0,240,255,0.12), 0 0 32px rgba(0,240,255,0.06); }
-  .stat-glow-purple { box-shadow: inset 0 1px 0 rgba(139,92,246,0.14), 0 0 32px rgba(139,92,246,0.07); }
-  .stat-glow-pink { box-shadow: inset 0 1px 0 rgba(244,63,94,0.12), 0 0 32px rgba(244,63,94,0.06); }
-  .stat-glow-lime { box-shadow: inset 0 1px 0 rgba(163,230,53,0.12), 0 0 32px rgba(163,230,53,0.06); }
+  .stat-glow-cyan { box-shadow: inset 0 1px 0 rgba(98,220,231,0.12), 0 0 32px rgba(98,220,231,0.06); }
+  .stat-glow-purple { box-shadow: inset 0 1px 0 rgba(155,140,243,0.14), 0 0 32px rgba(155,140,243,0.07); }
+  .stat-glow-pink { box-shadow: inset 0 1px 0 rgba(238,120,152,0.12), 0 0 32px rgba(238,120,152,0.06); }
+  .stat-glow-lime { box-shadow: inset 0 1px 0 rgba(171,215,138,0.12), 0 0 32px rgba(171,215,138,0.06); }
 
   /* ── Hero headline ──────────────────────────────────────────── */
   .hero-title {
     @apply font-display font-black leading-[0.95];
     letter-spacing: 0.01em;
-    text-shadow: 0 0 60px rgba(0, 240, 255, 0.25);
+    text-shadow: 0 0 60px rgba(98, 220, 231, 0.25);
   }
 
   /* ── Dialog / modal ─────────────────────────────────────────── */
@@ -270,7 +270,7 @@
   }
   .nav-link-active {
     @apply text-neon-cyan bg-neon-cyan/[0.1] border border-neon-cyan/20;
-    box-shadow: inset 0 1px 0 rgba(0, 240, 255, 0.12);
+    box-shadow: inset 0 1px 0 rgba(98, 220, 231, 0.12);
   }
 
   /* ── Tabs ───────────────────────────────────────────────────── */

@@ -61,7 +61,7 @@ const UserSchema = defineSchema(
     },
     passwordHash: { type: String, select: false },
     avatar: { type: String, default: '' },
-    avatarColor: { type: String, default: '#00f0ff' },
+    avatarColor: { type: String, default: '#62dce7' },
     bio: { type: String, default: '', maxlength: 500 },
     region: { type: String, default: 'IN', maxlength: 32 },
     country: { type: String, default: 'India', maxlength: 64 },

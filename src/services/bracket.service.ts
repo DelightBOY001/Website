@@ -414,7 +414,7 @@ export function computeStandings(
   };
 
   for (const m of matches) {
-    if (m.status !== 'completed' || m.participant1?.kind === 'bye' || m.participant2?.kind === 'bye')
+    if (!['completed', 'walkover'].includes(m.status) || m.participant1?.kind === 'bye' || m.participant2?.kind === 'bye')
       continue;
     if (m.participant1?.kind === 'tbd' || m.participant2?.kind === 'tbd') continue;
     const a = ensure(m.participant1);

@@ -68,7 +68,7 @@ export default function AdminReportsPage() {
                 segments={(d.tournamentsByFormat ?? []).map((f: any, i: number) => ({
                   label: String(f._id ?? 'unknown').replace(/_/g, ' '),
                   value: f.count,
-                  color: ['#00f0ff', '#8b5cf6', '#f43f5e', '#22c55e', '#fbbf24', '#3b82f6'][i % 6],
+                  color: ['#62dce7', '#9b8cf3', '#f43f5e', '#22c55e', '#fbbf24', '#6b9fea'][i % 6],
                 }))}
                 centerValue={String((d.tournamentsByFormat ?? []).reduce((a: number, f: any) => a + f.count, 0))}
                 centerLabel="tournaments"
@@ -87,7 +87,7 @@ export default function AdminReportsPage() {
                 segments={(d.paymentsByStatus ?? []).map((f: any, i: number) => ({
                   label: String(f._id ?? 'unknown'),
                   value: f.count,
-                  color: ['#22c55e', '#f43f5e', '#fbbf24', '#8b5cf6', '#64748b'][i % 5],
+                  color: ['#22c55e', '#f43f5e', '#fbbf24', '#9b8cf3', '#64748b'][i % 5],
                 }))}
                 centerValue={String((d.paymentsByStatus ?? []).reduce((a: number, f: any) => a + f.count, 0))}
                 centerLabel="payments"

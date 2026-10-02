@@ -1,6 +1,12 @@
 /** @type {import('next').NextConfig} */
+const isDevelopment = process.env.NODE_ENV !== 'production';
+const frameAncestors = isDevelopment
+  ? "frame-ancestors 'self' https://*.e2b.app"
+  : "frame-ancestors 'none'";
+
 const nextConfig = {
   reactStrictMode: true,
+  allowedDevOrigins: ['*.e2b.app'],
   poweredByHeader: false,
   compress: true,
   images: {
@@ -14,7 +20,7 @@ const nextConfig = {
       {
         source: '/(.*)',
         headers: [
-          { key: 'X-Frame-Options', value: 'DENY' },
+          ...(!isDevelopment ? [{ key: 'X-Frame-Options', value: 'DENY' }] : []),
           { key: 'X-Content-Type-Options', value: 'nosniff' },
           { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
           { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
@@ -31,13 +37,13 @@ const nextConfig = {
               "object-src 'none'",
               "base-uri 'self'",
               "form-action 'self'",
+              frameAncestors,
             ].join('; '),
           },
         ],
       },
     ];
   },
-  eslint: { ignoreDuringBuilds: true },
 };
 
 export default nextConfig;

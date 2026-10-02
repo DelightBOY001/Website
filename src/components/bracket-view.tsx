@@ -253,7 +253,7 @@ export function BracketViewComponent({
                 key={c.key}
                 d={c.d}
                 fill="none"
-                stroke={c.active ? 'rgba(0, 240, 255, 0.45)' : 'rgba(37, 43, 92, 0.9)'}
+                stroke={c.active ? 'rgba(98, 220, 231, 0.45)' : 'rgba(53, 75, 102, 0.9)'}
                 strokeWidth={2}
                 strokeDasharray={c.active ? undefined : '5 5'}
               />

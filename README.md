@@ -139,6 +139,13 @@ npm run make-admin
 
 It grants `super_admin` to that existing account without changing its password. Sign out and back in, then open `/admin`. Never share the Atlas URI. If you also seeded demo users on a public site, downgrade or ban the default demo admin/organizer accounts in **/admin/users**; their demo password is public.
 
+**If the tournament form has no games:** run this safe catalogue-only seed against the same persistent Atlas URI used by Vercel. It inserts missing game records without creating demo users or tournaments:
+
+```powershell
+$env:MONGODB_URI="mongodb+srv://USER:PASSWORD@CLUSTER.mongodb.net/your-database"
+npm run seed:games
+```
+
 ## Step 6 — Verify everything works
 
 ```bash

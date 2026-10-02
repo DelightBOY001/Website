@@ -299,6 +299,82 @@ async function main() {
 
       const myT = await req(player, 'GET', '/api/me/tournaments');
       ok('GET /api/me/tournaments → 200', myT.status === 200, `status=${myT.status}`);
+
+      /* ── Admin match search + result correction ─────────────── */
+      console.log('▶ Admin match search and result correction');
+      const opponent = new Jar();
+      const opponentReg = await req(opponent, 'POST', '/api/auth/register', {
+        name: 'Second Test Player',
+        username: 'secondtestplayer',
+        email: 'second-player@test.gg',
+        password: 'Password@123',
+        confirmPassword: 'Password@123',
+      });
+      ok('Create second match participant', opponentReg.status === 200 || opponentReg.status === 201, `status=${opponentReg.status}`);
+
+      const playerDoc = await db.collection('users').findOne({ email: 'player@test.gg' });
+      const opponentDoc = await db.collection('users').findOne({ email: 'second-player@test.gg' });
+      await db.collection('users').updateOne({ _id: playerDoc!._id }, { $set: { role: 'moderator', emailVerified: true } });
+      await req(player, 'POST', '/api/auth/login', {
+        email: 'player@test.gg',
+        password: 'Password@123',
+      });
+
+      const matchId = new mongoose.Types.ObjectId();
+      await db.collection('matches').insertOne({
+        _id: matchId,
+        tournament: new mongoose.Types.ObjectId(tid),
+        matchNumber: 9001,
+        round: 1,
+        roundName: 'Final',
+        position: 0,
+        stage: 'knockout',
+        format: 'bo3',
+        participant1: { kind: 'user', ref: playerDoc!._id, name: 'Test Player Renamed', seed: 1, score: 0, logo: '' },
+        participant2: { kind: 'user', ref: opponentDoc!._id, name: 'Second Test Player', seed: 2, score: 0, logo: '' },
+        winner: { kind: 'none', ref: null, name: '' },
+        loser: { kind: 'none', ref: null, name: '' },
+        status: 'pending',
+        scores: [],
+        scheduledAt: new Date(),
+        nextMatchNumber: 0,
+        nextMatchSlot: 0,
+        loserNextMatchNumber: 0,
+        loserNextMatchSlot: 0,
+        reportedBy: null,
+        confirmedBy: null,
+        disputeOpen: false,
+        disputeReason: '',
+        isBye: false,
+        isThirdPlace: false,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+
+      const searchMatch = await req(player, 'GET', '/api/admin/matches?search=Second%20Test%20Player');
+      ok('Admin match search finds a participant', searchMatch.status === 200 && searchMatch.json?.items?.some((m: any) => m._id === String(matchId)), `status=${searchMatch.status}`);
+
+      const firstResult = await req(player, 'POST', `/api/matches/${matchId}/winner`, {
+        winnerSlot: 1,
+        score1: 2,
+        score2: 1,
+        reason: 'Initial test result',
+      });
+      ok('Set a scored match result', firstResult.status === 200, `status=${firstResult.status}`);
+
+      const correction = await req(player, 'POST', `/api/matches/${matchId}/winner`, {
+        winnerSlot: 2,
+        score1: 0,
+        score2: 2,
+        reason: 'Corrected test result',
+      });
+      ok('Correct a completed final result', correction.status === 200, `status=${correction.status} ${JSON.stringify(correction.json).slice(0, 160)}`);
+
+      const playerAfter = await db.collection('users').findOne({ _id: playerDoc!._id });
+      const opponentAfter = await db.collection('users').findOne({ _id: opponentDoc!._id });
+      const finishedTournament = await db.collection('tournaments').findOne({ _id: new mongoose.Types.ObjectId(tid) });
+      ok('Match stats move to the corrected winner', playerAfter?.stats?.wins === 0 && playerAfter?.stats?.losses === 1 && opponentAfter?.stats?.wins === 1 && opponentAfter?.stats?.losses === 0);
+      ok('Completed tournament champion updates', String(finishedTournament?.winner?.ref) === String(opponentDoc!._id));
     }
 
     /* ── Payments verification hardening ─────────────────────── */
@@ -335,6 +411,8 @@ async function main() {
     console.log('▶ AI assistant (data mode)');
     const ai = await req(player, 'POST', '/api/ai/chat', { message: 'What tournaments are open?' });
     ok('POST /api/ai/chat answers (200)', ai.status === 200 && typeof ai.json?.answer === 'string', `status=${ai.status}`);
+    await db.collection('users').updateOne({ email: 'player@test.gg' }, { $set: { role: 'player' } });
+    await req(player, 'POST', '/api/auth/login', { email: 'player@test.gg', password: 'Password@123' });
     const aiAdmin = await req(player, 'POST', '/api/ai/admin', { message: 'revenue today' });
     ok('Player blocked from admin AI (401/403)', aiAdmin.status === 401 || aiAdmin.status === 403, `status=${aiAdmin.status}`);
 
